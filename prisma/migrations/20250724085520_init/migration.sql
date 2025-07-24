@@ -22,7 +22,6 @@ CREATE TABLE "expenses" (
     "attendees" TEXT[],
     "status" "ExpenseStatus" NOT NULL DEFAULT 'DRAFT',
     "approval_status" "ApprovalStatus" NOT NULL DEFAULT 'PENDING',
-    "receipt_url" TEXT,
     "approval_metadata" JSONB,
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -34,7 +33,9 @@ CREATE TABLE "expenses" (
 CREATE TABLE "receipts" (
     "receipt_id" TEXT NOT NULL,
     "expense_id" TEXT NOT NULL,
+    "file_name" TEXT NOT NULL,
     "file_path" TEXT NOT NULL,
+    "file_url" TEXT NOT NULL,
     "file_type" VARCHAR(50) NOT NULL,
     "ocr_status" "OCRStatus" NOT NULL DEFAULT 'PENDING',
     "ocr_confidence_score" DECIMAL(3,2),
