@@ -20,7 +20,7 @@ function mapJoiCodeToCustomCode(joiType) {
 }
 
 const addExpense = asyncHandler(async (req, res) => {
-    const { error, value } = expenseSchema.validate(req.body, { abortEarly: false });
+    const { error, value } = expenseSchema.validate(req.body, { abortEarly: false });   
 
     if (error) {
         const errors = error.details.map(err => ({
@@ -37,12 +37,8 @@ const addExpense = asyncHandler(async (req, res) => {
         const newExpense = await prisma.expense.create({
             data: {
                 ...value,
-                user_id: '1',
-                company_id: '1',
-                category_id: 'cat-1',
-                subcategory_id: 'sub-2',
-                merchant: "Apna",
-                project_id: '1',
+                user_id: req.user.id,
+                company_id: req.user.company_id,
             }
         })
         return res
@@ -50,13 +46,14 @@ const addExpense = asyncHandler(async (req, res) => {
             .json(new ApiResponse(201, newExpense, "Expense added successfully"));
 
     } catch (error) {
-        console.log(error.message);
+        console.log({error});
         throw new BaseException(
             400,
             "Something went wrong while adding expense",
             "ADD_EXPENSE_FAILED",
             [
                 {
+                    name: error.name,
                     reason: error.message || "Unknown reason",
                     code: error.code || "Unknown code"
                 }
@@ -66,14 +63,14 @@ const addExpense = asyncHandler(async (req, res) => {
 })
 
 const getUserExpenses = asyncHandler(async (req, res) => {
-    const { user_id } = req.query;
-
+    const user_id  = req.user?.id || req.query.user_id;
+    
     if (!user_id) {
         throw new BaseException(
-            400,
-            "User ID is required",
-            "USER_ID_MISSING",
-            [{ field: "user_id", reason: "User ID parameter is missing" }]
+            401,
+            "Unauthorized access",
+            "AUTH_REQUIRED",
+            [{ reason: "User not authenticated" }]
         );
     }
 

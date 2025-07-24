@@ -25,37 +25,39 @@ model Expense {
   amount                Decimal
   currency              String          @default("USD") @db.VarChar(3)
   category_id           String
-  subcategory_id        String
   expense_date          DateTime        @db.Timestamptz(6)
   merchant              String?
-  location              Json?
-  tags                  String[]
   attendees             String[]
-  project_id            String?
-  billable              Boolean         @default(false)
   status                ExpenseStatus   @default(DRAFT)
   approval_status       ApprovalStatus  @default(PENDING)
+  receipt_url           String?
   approval_metadata     Json?
   created_at            DateTime        @default(now())   @db.Timestamptz(6)
   updated_at            DateTime        @default(now())   @db.Timestamptz(6)
 
   category              ExpenseCategory  @relation(fields: [category_id], references: [category_id])
-  subcategory           ExpenseSubcategory? @relation(fields: [subcategory_id], references: [subcategory_id])
   receipts              Receipt[]
   audit_logs            ExpenseAuditLog[]
 
   @@map("expenses")
+
+  @@index([user_id], name: "idx_expenses_user_id")
+  @@index([company_id], name: "idx_expenses_company_id")
+  @@index([expense_date], name: "idx_expenses_date")
+  @@index([status], name: "idx_expenses_status")
+  @@index([approval_status], name: "idx_expenses_approval_status")
+  @@index([category_id], name: "idx_expenses_category")
+  @@index([created_at], name: "idx_expenses_created_at")
+  @@index([user_id, expense_date(sort: Desc)], name: "idx_expenses_user_date")
+  @@index([company_id, status], name: "idx_expenses_company_status")
 
 }
 
 model Receipt {
   receipt_id          String     @id @default(uuid())
   expense_id          String
-  file_name           String     @db.VarChar(255)
   file_path           String
-  file_size           BigInt
   file_type           String     @db.VarChar(50)
-  storage_provider    String     @db.VarChar(50)
   ocr_status          OCRStatus  @default(PENDING)
   ocr_confidence_score Decimal?  @db.Decimal(3, 2)
   extracted_data      Json?
@@ -69,34 +71,20 @@ model Receipt {
 
 model ExpenseCategory {
   category_id           String          @id @default(uuid())
-  company_id            String?
+  company_id            String
   name                  String          @db.VarChar(100)
   description           String?
-  is_system_category    Boolean         @default(true)
+  spend_limit           Int
   is_active             Boolean         @default(true)
   created_at            DateTime        @default(now()) @db.Timestamptz(6)
   updated_at            DateTime        @default(now()) @db.Timestamptz(6)
 
   expenses              Expense[]
-  subcategories         ExpenseSubcategory[]
 
   @@unique([name, company_id], name: "uk_category_name_company")
   @@map("expense_categories")
 }
 
-model ExpenseSubcategory {
-  subcategory_id String     @id @default(uuid())
-  category_id    String
-  name           String     @db.VarChar(100)
-  description    String?
-  is_active      Boolean    @default(true)
-  created_at     DateTime   @default(now()) @db.Timestamptz(6)
-
-  category       ExpenseCategory @relation(fields: [category_id], references: [category_id])
-  expenses       Expense[]
-
-  @@map("expense_subcategories")
-}
 
 model ExpenseAuditLog {
   audit_id     String   @id @default(uuid())

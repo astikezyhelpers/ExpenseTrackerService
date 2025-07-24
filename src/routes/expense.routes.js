@@ -1,7 +1,10 @@
 import express from 'express';
 import { addExpense, deleteExpense, getExpenseById, getUserExpenses, updateExpense, updateExpenseStatus } from '../controllers/expense.controller.js';
+import {mockAuth} from "../middlewares/mockAuth.middleware.js";
 
 const router = express.Router();
+
+router.use(mockAuth)
 
 router.post("/expenses",addExpense);
 router.get("/expenses",getUserExpenses)

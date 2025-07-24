@@ -30,6 +30,12 @@ const expenseSchema = Joi.object({
             'any.required': 'Amount is required'
         }),
 
+    category_id: Joi.string().required()
+        .messages({
+            'string.base': 'Currency must be a string',
+            'any.required': 'category_id is required'
+        }),
+
     currency: Joi.string().length(3).uppercase().required()
         .messages({
             'string.base': 'Currency must be a string',
