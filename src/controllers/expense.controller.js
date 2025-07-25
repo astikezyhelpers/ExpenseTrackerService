@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 import { expenseSchema } from "../validators/createExpenseSchema.js"
 import prisma from "../lib/prisma.js"
 import { BaseException } from "../utils/exception/BaseException.js";
-import { updateExpenseSchema } from "../validators/updateExpense.validator.js";
+import { updateExpenseSchema } from "../validators/updateExpenseSchema.js";
 
 function mapJoiCodeToCustomCode(joiType) {
     const map = {

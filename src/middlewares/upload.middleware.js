@@ -1,6 +1,7 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
 
 const uploadDirBase = path.join(process.cwd(), 'public', 'uploads');
 
@@ -17,9 +18,9 @@ const storage = multer.diskStorage({
     cb(null, dir);
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
-    cb(null, `${req.uploadType || 'file'}-${uniqueSuffix}${ext}`);
+    const uniqueId = uuidv4();
+    cb(null, `${uniqueId}${ext}`);
   },
 });
 

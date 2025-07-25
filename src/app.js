@@ -11,9 +11,11 @@ app.use(cookieParser())
 
 import receiptRouter from "./routes/receipt.routes.js"
 import expenseRoute from "./routes/expense.routes.js"
+import categoryRoute from "./routes/category.routes.js"
 
 app.use("/api/v1/expenses", receiptRouter)
 app.use("/api/v1", expenseRoute);
+app.use("/api/v1/expenses", categoryRoute)
 
 app.use(errorHandler)
 
